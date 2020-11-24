@@ -25,7 +25,7 @@ void print(int *p[], const int N, const int M){
         for (int j = 0; j < M; j++){
             cout << p[i][j] << "\t";
         }
-        cout << "\n";
+        cout << endl;
     }
 }
 
@@ -41,22 +41,22 @@ int main() {
     cout << "Your matrix:\n" << endl;
     filling(p, N, N); // random filling matrix
     print(p, N, N); // printing matrix
-    cout << endl;
+    cout << "\n";
 
-    omp_set_dynamic(0);
-    omp_set_num_threads(6);
+    omp_set_dynamic(0); // static threads
+    omp_set_num_threads(6); // default num threads
 
     int temp = 0;
     bool changed_matrix = true; // Has the matrix been sorted? Values is True or False.
     double start_time = omp_get_wtime( ); // The start time of multithreaded algorithm
 
 #pragma omp parallel for // Multithreaded algorithm
-    for (int j = 0; j < 6; ++j) {
+    for (int j = 0; j < N; ++j) {
         changed_matrix = true;
         temp = matrix[0][j];
         while (changed_matrix == true) {
             changed_matrix = false;
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < N-1; ++i) {
                 if (matrix[i+1][j] < matrix[i][j]) {
                     temp = matrix[i][j];
                     matrix[i][j] = matrix[i+1][j];
@@ -73,12 +73,12 @@ int main() {
 
     start_time = omp_get_wtime( ); // The start time of single-threaded algorithm
     // Single-threaded algorithm
-    for (int j = 0; j < 6; ++j) {
+    for (int j = 0; j < N; ++j) {
         changed_matrix = true;
         temp = matrix[0][j];
         while (changed_matrix == true) {
             changed_matrix = false;
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < N-1; ++i) {
                 if (matrix[i+1][j] < matrix[i][j]) {
                     temp = matrix[i][j];
                     matrix[i][j] = matrix[i+1][j];
@@ -99,6 +99,7 @@ int main() {
 return 0;
 
 }
+
 /*
     Для данной простой задачи использование параллельных алгоритмов неэффективно,
     работа программы намного быстрее при однопоточном режиме.
